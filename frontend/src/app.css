@@ -1,0 +1,49 @@
+/* Estilos globales de Tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Estilos personalizados */
+body {
+	@apply bg-gray-50 text-gray-900;
+}
+
+/* Estilos para sliders */
+input[type='range'] {
+	@apply w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer;
+}
+
+input[type='range']::-webkit-slider-thumb {
+	@apply appearance-none w-4 h-4 bg-primary-600 rounded-full cursor-pointer;
+}
+
+input[type='range']::-moz-range-thumb {
+	@apply w-4 h-4 bg-primary-600 rounded-full cursor-pointer border-0;
+}
+
+/* Estilos para botones */
+.btn {
+	@apply px-4 py-2 rounded-lg font-medium transition-colors duration-200;
+}
+
+.btn-primary {
+	@apply bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800;
+}
+
+.btn-secondary {
+	@apply bg-gray-200 text-gray-800 hover:bg-gray-300 active:bg-gray-400;
+}
+
+.btn-success {
+	@apply bg-green-600 text-white hover:bg-green-700 active:bg-green-800;
+}
+
+/* Estilos para cards */
+.card {
+	@apply bg-white rounded-lg shadow-md p-6;
+}
+
+/* Loader spinner */
+.spinner {
+	@apply inline-block w-6 h-6 border-4 border-current border-r-transparent rounded-full animate-spin;
+}
