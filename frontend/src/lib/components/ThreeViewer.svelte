@@ -4,7 +4,7 @@
 	 */
 	import { onMount, onDestroy } from 'svelte';
 	import * as THREE from 'three';
-	import { meshState, processingParams } from '$lib/stores/appStore';
+	import { meshState, processingParams, imageState } from '$lib/stores/appStore';
 	
 	let container;
 	let scene, camera, renderer, mesh, shadowPlane;
@@ -13,6 +13,7 @@
 	const previewHeight = 4;
 	const baseRadius = 1.5;
 	let unsubscribeProcessing;
+	let unsubscribeImage;
 	
 	// Iluminación
 	let pointLight, ambientLight, shadowLight;
@@ -22,6 +23,9 @@
 	let transitionStartTime = null;
 	let transitionDuration = 300; // ms
 	let previousTransitionParams = null;
+	
+	// Parámetros actuales para usar en animate()
+	let currentParams = {};
 	
 	// Colores de luz
 	const lightColorTemp = {
@@ -34,9 +38,17 @@
 		initThree();
 		animate();
 		unsubscribeProcessing = processingParams.subscribe((params) => {
+			currentParams = params;
 			transitionStartTime = Date.now();
 			previousTransitionParams = params;
 			refreshPreview(params);
+		});
+		
+		// Suscribirse a cambios de imagen para actualizar textura
+		unsubscribeImage = imageState.subscribe((state) => {
+			if (state.preview && mesh) {
+				updateMeshTexture(state.preview);
+			}
 		});
 	});
 	
@@ -49,6 +61,9 @@
 		}
 		if (unsubscribeProcessing) {
 			unsubscribeProcessing();
+		}
+		if (unsubscribeImage) {
+			unsubscribeImage();
 		}
 	});
 	
@@ -237,37 +252,54 @@
 		mesh.geometry.computeVertexNormals();
 	}
 	
+	function updateMeshTexture(previewUrl) {
+		if (!mesh || !mesh.material) return;
+		
+		// Cargar textura desde preview URL
+		const loader = new THREE.TextureLoader();
+		loader.load(previewUrl, (texture) => {
+			// Configurar textura
+			texture.wrapS = THREE.RepeatWrapping;
+			texture.wrapT = THREE.ClampToEdgeWrapping;
+			
+			// Aplicar textura al material
+			if (mesh.material.map) {
+				mesh.material.map.dispose();
+			}
+			mesh.material.map = texture;
+			mesh.material.needsUpdate = true;
+		});
+	}
+	
 	function animate() {
 		animationId = requestAnimationFrame(animate);
 		
-		// Obtener parámetros actuales para rotación y luz
-		processingParams.subscribe((params) => {
-			if (params.autoRotate && mesh) {
-				rotationAngle += (params.rotationSpeed || 1.0) * 0.005;
-				mesh.rotation.y = rotationAngle;
-			}
-			
-			// Actualizar iluminación según modo lámpara
-			if (params.lampMode) {
-				const lightConfig = lightColorTemp[params.lightColor || 'neutra'];
-				pointLight.color.setHex(lightConfig.color);
-				pointLight.intensity = (params.lightIntensity || 1.0) * 1.5;
-			} else {
-				pointLight.intensity = 0;
-			}
-			
-			// Transición suave de color ambiental si lampMode está activo
-			if (params.lampMode) {
-				const factor = (params.lightIntensity || 1.0) * 0.3;
-				const lightConfig = lightColorTemp[params.lightColor || 'neutra'];
-				const tempColor = new THREE.Color(lightConfig.color);
-				ambientLight.color.lerp(tempColor, factor * 0.2);
-				ambientLight.intensity = Math.max(0.2, 0.4 - factor * 0.1);
-			} else {
-				ambientLight.color.setHex(0xffffff);
-				ambientLight.intensity = 0.4;
-			}
-		})();
+		// Usar parámetros actuales sin crear nueva suscripción
+		if (currentParams.autoRotate && mesh) {
+			rotationAngle += (currentParams.rotationSpeed || 1.0) * 0.005;
+			mesh.rotation.y = rotationAngle;
+		}
+		
+		// Actualizar iluminación según modo lámpara
+		if (currentParams.lampMode) {
+			const lightConfig = lightColorTemp[currentParams.lightColor || 'neutra'];
+			pointLight.color.setHex(lightConfig.color);
+			pointLight.intensity = (currentParams.lightIntensity || 1.0) * 1.5;
+		} else {
+			pointLight.intensity = 0;
+		}
+		
+		// Transición suave de color ambiental si lampMode está activo
+		if (currentParams.lampMode) {
+			const factor = (currentParams.lightIntensity || 1.0) * 0.3;
+			const lightConfig = lightColorTemp[currentParams.lightColor || 'neutra'];
+			const tempColor = new THREE.Color(lightConfig.color);
+			ambientLight.color.lerp(tempColor, factor * 0.2);
+			ambientLight.intensity = Math.max(0.2, 0.4 - factor * 0.1);
+		} else {
+			ambientLight.color.setHex(0xffffff);
+			ambientLight.intensity = 0.4;
+		}
 		
 		renderer.render(scene, camera);
 	}

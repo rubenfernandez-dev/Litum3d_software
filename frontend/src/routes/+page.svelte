@@ -4,6 +4,7 @@
 	 */
 	import '../app.css';
 	import ImageUploader from '$lib/components/ImageUploader.svelte';
+	import MultiImageUploader from '$lib/components/MultiImageUploader.svelte';
 	import ImageEditor from '$lib/components/ImageEditor.svelte';
 	import ParameterControls from '$lib/components/ParameterControls.svelte';
 	import AdvancedShapeControls from '$lib/components/AdvancedShapeControls.svelte';
@@ -11,6 +12,7 @@
 	import PreviewEnhancements from '$lib/components/PreviewEnhancements.svelte';
 	import ThreeViewer from '$lib/components/ThreeViewer.svelte';
 	import ActionButtons from '$lib/components/ActionButtons.svelte';
+	import { multiImageState } from '$lib/stores/appStore';
 </script>
 
 <svelte:head>
@@ -63,7 +65,11 @@
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 			<!-- Columna Izquierda -->
 			<div class="space-y-6">
-				<ImageUploader />
+				{#if $multiImageState.useMultiImageMode}
+					<MultiImageUploader />
+				{:else}
+					<ImageUploader />
+				{/if}
 				<ImageEditor />
 				<ParameterControls />
 				<AdvancedShapeControls />

@@ -2,7 +2,7 @@
 	/**
 	 * Controles avanzados para torsión, escala progresiva e interpolación del perfil.
 	 */
-	import { processingParams } from '$lib/stores/appStore';
+	import { processingParams, multiImageState } from '$lib/stores/appStore';
 	import ScaleCurveEditor from '$lib/components/ScaleCurveEditor.svelte';
 
 	const interpolationOptions = [
@@ -15,6 +15,23 @@
 	<h2 class="text-xl font-bold mb-4">2.1 Controles Avanzados</h2>
 
 	<div class="space-y-5">
+		<!-- Toggle Multi-Imagen -->
+		<div class="flex items-center gap-2">
+			<input
+				type="checkbox"
+				id="multiImageMode"
+				bind:checked={$multiImageState.useMultiImageMode}
+			/>
+			<label for="multiImageMode" class="text-sm font-medium text-gray-700">
+				🎨 Modo múltiples imágenes (collage 360°)
+			</label>
+		</div>
+		{#if $multiImageState.useMultiImageMode}
+			<p class="text-xs text-blue-600 bg-blue-50 p-2 rounded">
+				Sube varias imágenes que se distribuirán automáticamente alrededor del cilindro 360°.
+			</p>
+		{/if}
+		
 		<!-- Torsión total -->
 		<div>
 			<div class="block text-sm font-medium text-gray-700 mb-2">

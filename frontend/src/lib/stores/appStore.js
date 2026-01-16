@@ -12,6 +12,14 @@ export const imageState = writable({
 	preview: null
 });
 
+// Estado de múltiples imágenes (modo collage 360°)
+export const multiImageState = writable({
+	files: [],
+	count: 0,
+	previews: [],
+	useMultiImageMode: false
+});
+
 // Estado del heightmap
 export const heightmapState = writable({
 	heightmapId: null,

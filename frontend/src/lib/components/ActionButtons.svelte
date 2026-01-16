@@ -2,18 +2,63 @@
 	/**
 	 * Botones de acción para generar y exportar
 	 */
-	import { imageState, heightmapState, meshState, processingParams, loadingState, exportState } from '$lib/stores/appStore';
+	import { imageState, heightmapState, meshState, processingParams, loadingState, exportState, multiImageState } from '$lib/stores/appStore';
 	import { apiService } from '$lib/services/apiService';
 	
 	async function generateLithophane() {
-		if (!$imageState.imageId) {
-			alert('Por favor, carga una imagen primero');
-			return;
+		// Validar según el modo
+		if ($multiImageState.useMultiImageMode) {
+			if (!$multiImageState.files || $multiImageState.files.length === 0) {
+				alert('Por favor, carga al menos una imagen en modo múltiple');
+				return;
+			}
+		} else {
+			if (!$imageState.imageId) {
+				alert('Por favor, carga una imagen primero');
+				return;
+			}
 		}
 		
 		try {
-			// Paso 1: Generar heightmap
-			loadingState.set({ isLoading: true, message: 'Generando mapa de alturas...', progress: 33 });
+			let heightmapId;
+			
+			// Paso 1: Generar heightmap (modo simple o multi)
+			if ($multiImageState.useMultiImageMode) {
+				loadingState.set({ isLoading: true, message: 'Procesando múltiples imágenes...', progress: 20 });
+				
+				const multiResponse = await apiService.processMultiImages($multiImageState.files, {
+					target_height: 512,
+					blend_width: 20,
+					apply_auto_enhance: false
+				});
+				
+				heightmapId = multiResponse.heightmap_id;
+				
+				heightmapState.set({
+					heightmapId: heightmapId,
+					minValue: 0,
+					maxValue: 1
+				});
+			} else {
+				loadingState.set({ isLoading: true, message: 'Generando mapa de alturas...', progress: 33 });
+				
+				const heightmapResponse = await apiService.generateHeightmap($imageState.imageId, {
+					minHeight: $processingParams.minHeight,
+					maxHeight: $processingParams.maxHeight,
+					invert: $processingParams.invert
+				});
+				
+				heightmapId = heightmapResponse.heightmap_id;
+				
+				heightmapState.set({
+					heightmapId: heightmapId,
+					minValue: heightmapResponse.min_value,
+					maxValue: heightmapResponse.max_value
+				});
+			}
+			
+			// Paso 2: Generar malla
+			loadingState.set({ isLoading: true, message: 'Generando malla 3D...', progress: 66 });
 			
 			const heightmapResponse = await apiService.generateHeightmap($imageState.imageId, {
 				minHeight: $processingParams.minHeight,
@@ -30,7 +75,7 @@
 			// Paso 2: Generar malla
 			loadingState.set({ isLoading: true, message: 'Generando malla 3D...', progress: 66 });
 			
-			const meshResponse = await apiService.generateMesh($heightmapState.heightmapId, {
+			const meshResponse = await apiService.generateMesh(heightmapId, {
 				shapeType: $processingParams.shapeType,
 				thickness: $processingParams.thickness,
 				smoothing: $processingParams.smoothing,

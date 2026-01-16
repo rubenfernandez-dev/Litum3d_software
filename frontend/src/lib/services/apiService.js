@@ -149,6 +149,41 @@ export const apiService = {
 	},
 	
 	/**
+	 * Exporta una malla a formato STL o 3MF
+	 */
+	async exportMesh(meshId, format = 'stl') {
+		const response = await axios.post(
+			`${API_BASE_URL}/export`,
+			{
+				mesh_id: meshId,
+				format: format
+			}
+		);
+		return response.data;
+	},
+
+	/**
+	 * Procesa múltiples imágenes para litofanía 360° collage
+	 */
+	async processMultiImages(files, params = {}) {
+		const formData = new FormData();
+		files.forEach((file, index) => {
+			formData.append(`images`, file);
+		});
+		formData.append('params', JSON.stringify(params));
+
+		const response = await axios.post(
+			`${API_BASE_URL}/multi-image-projection`,
+			formData,
+			{
+				headers: { 'Content-Type': 'multipart/form-data' }
+			}
+		);
+
+		return response.data;
+	},
+
+	/**
 	 * Verifica el estado del servidor
 	 */
 	async healthCheck() {
