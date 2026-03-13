@@ -1,469 +1,345 @@
-# Litum3D - Generador de Litofanías 3D
+<div align="center">
 
-![Litum3D](https://img.shields.io/badge/version-1.0.0-blue.svg)
-![Python](https://img.shields.io/badge/python-3.8+-green.svg)
-![Node](https://img.shields.io/badge/node-18+-green.svg)
-![License](https://img.shields.io/badge/license-MIT-yellow.svg)
+<img src="https://img.shields.io/badge/Litum3D-v1.0.0-6366f1?style=for-the-badge" alt="Litum3D" />
 
-## 🌟 Descripción
+# Litum3D — 3D Lithophane Generator
 
-**Litum3D** es una aplicación web completa para generar litofanías 3D a partir de imágenes 2D. Convierte tus fotos en impresionantes piezas que revelan la imagen cuando se iluminan desde atrás.
+**Transform your photos into stunning 3D-printed art pieces that come alive when backlit.**
+A full-stack web application powered by Python, FastAPI, SvelteKit, and Three.js.
 
-### ¿Qué es una litofanía?
+[![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.128-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![Svelte](https://img.shields.io/badge/SvelteKit-5-FF3E00?style=flat-square&logo=svelte&logoColor=white)](https://kit.svelte.dev)
+[![Three.js](https://img.shields.io/badge/Three.js-r171-black?style=flat-square&logo=threedotjs&logoColor=white)](https://threejs.org)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
-Una litofanía es una impresión 3D con variaciones de grosor que crea una imagen cuando se ilumina desde atrás. Las zonas más finas permiten pasar más luz, mientras que las más gruesas la bloquean, creando gradientes y detalles asombrosos.
+</div>
 
-## ✨ Características
+---
 
-### Procesamiento de Imagen
-- ✅ Conversión a escala de grises
-- ✅ Ajuste de contraste, brillo, desenfoque y nitidez
-- ✅ Normalización de valores
-- ✅ Filtros avanzados con OpenCV
+## What is a Lithophane?
 
-### Generación de Geometría 3D
-Soporte para múltiples formas:
-- 📐 **Plano rectangular**
-- ⭕ **Plano circular**
-- 🌙 **Arco**
-- 🥫 **Cilindro**
-- 🌍 **Esfera parcial**
-- ❤️ **Corazón**
-- 🗼 **Torres poligonales**:
-  - Triangular (3 lados)
-  - Cuadrada (4 lados)
-  - Pentagonal (5 lados)
-  - Hexagonal (6 lados)
-  - Octagonal (8 lados)
+A **lithophane** is a 3D-printed piece with varying wall thickness that creates a photographic image when backlit. Thinner areas let more light pass through (bright zones), while thicker areas block the light (dark zones), producing stunning depth and detail from an ordinary photo.
 
-### Parámetros Configurables
-- 📏 Altura mínima y máxima
-- 🔨 Grosor de base
-- 🌊 Nivel de suavizado
-- 📊 Resolución de malla
-- 📐 Curvatura (para formas curvas)
-- 🏗️ Altura de torre (para formas extruidas)
+---
 
-### Exportación
-- 💾 Exportación a **STL**
-- 💾 Exportación a **3MF**
-- 🔧 Optimización de malla
-- 🛠️ Reparación automática
+## ✨ Features
 
-### Interfaz de Usuario
-- 🎨 Diseño moderno con TailwindCSS
-- 🖼️ Carga de imágenes con drag & drop
-- 🎛️ Controles intuitivos con sliders
-- 👁️ Vista previa 3D interactiva con Three.js
-- 📱 Diseño responsive
+### 🖼️ Image Processing
+| Feature | Details |
+|---|---|
+| Grayscale conversion | Automatic with luminosity weighting |
+| Contrast / Brightness | Adjustable 0.1x–3.0x |
+| Blur / Sharpen | Gaussian blur + unsharp mask |
+| Auto-Enhance | One-click CLAHE + histogram equalization |
+| Invert heightmap | Swap light/dark for negative effect |
 
-## 🏗️ Arquitectura del Proyecto
+### 🔷 3D Shape Library
+- **Flat Rectangular** — classic wall piece
+- **Flat Circular** — round medallion
+- **Arc** — curved panel
+- **Cylinder** — wrap-around lamp shade
+- **Partial Sphere** — bowl shape
+- **Heart** — gift & romantic pieces
+- **Polygonal Towers**: Triangle · Square · Pentagon · Hexagon · Octagon
+
+### 🎨 Advanced Shape Controls
+- **Torsion** — progressive twist from base to top (0°–180°)
+- **Progressive Scale** — taper or flare the cylinder along its height
+- **Scale Curve Editor** — custom control points for non-linear scaling
+- **Interpolation modes** — linear or smooth curve
+
+### 🖼️ Multi-Image 360° Collage ✨
+Upload multiple photos and have them automatically distributed around a cylindrical lithophane. Seamless edge blending produces smooth transitions between photos — perfect for lamp shades showcasing several images when rotating.
+
+### 💡 Preview Enhancements
+- **Lamp mode** — simulate internal backlighting with warm / neutral / cool color temperature
+- **Auto-rotate** — continuous rotation preview
+- **Adjustable light intensity**
+
+### 🖥️ Interactive 3D Viewer (Three.js)
+- Real-time geometry preview
+- Mouse drag to orbit · Scroll wheel to zoom
+- Live update on parameter changes
+- Texture mapping from uploaded image
+- Shadow mapping with ambient + directional + point lights
+
+### 💾 Export
+- Export to **STL** (universal slicer format)
+- Export to **3MF** (richer metadata for modern slicers)
+- Automatic mesh optimization and repair via trimesh
+
+---
+
+## 🏗️ Architecture
 
 ```
 litum3d_software/
+├── backend/
+│   ├── main.py                        # FastAPI app entry point
+│   ├── requirements.txt
+│   ├── routes/
+│   │   └── api.py                     # All REST endpoints
+│   ├── services/
+│   │   ├── image_processor.py         # OpenCV / Pillow pipeline
+│   │   ├── heightmap_generator.py     # Grayscale → height values
+│   │   ├── mesh_generator.py          # Height values → 3D mesh
+│   │   └── export_service.py          # STL / 3MF writer
+│   ├── image_processing/
+│   │   ├── auto_enhance.py            # CLAHE auto-enhancement
+│   │   ├── filters.py                 # Image filter helpers
+│   │   └── multi_projection.py        # Multi-image 360° collage ✨
+│   ├── models/
+│   │   └── schemas.py                 # Pydantic request/response models
+│   └── utils/
+│       └── helpers.py
 │
-├── backend/                    # Backend Python + FastAPI
-│   ├── main.py                # Aplicación principal
-│   ├── requirements.txt       # Dependencias Python
-│   ├── run.bat               # Script de ejecución
-│   ├── routes/               # Endpoints de la API
-│   │   ├── __init__.py
-│   │   └── api.py            # Rutas REST
-│   ├── services/             # Lógica de negocio
-│   │   ├── __init__.py
-│   │   ├── image_processor.py      # Procesamiento de imágenes
-│   │   ├── heightmap_generator.py  # Generación de heightmaps
-│   │   ├── mesh_generator.py       # Generación de mallas 3D
-│   │   └── export_service.py       # Exportación STL/3MF
-│   ├── models/               # Modelos de datos
-│   │   ├── __init__.py
-│   │   └── schemas.py        # Esquemas Pydantic
-│   └── utils/                # Utilidades
-│       ├── __init__.py
-│       └── helpers.py        # Funciones auxiliares
-│
-├── frontend/                  # Frontend SvelteKit
-│   ├── package.json          # Dependencias Node.js
-│   ├── svelte.config.js      # Configuración Svelte
-│   ├── vite.config.js        # Configuración Vite
-│   ├── tailwind.config.js    # Configuración Tailwind
-│   ├── postcss.config.js     # Configuración PostCSS
-│   └── src/
-│       ├── app.html          # Template HTML
-│       ├── app.css           # Estilos globales
-│       ├── routes/           # Páginas
-│       │   └── +page.svelte  # Página principal
-│       └── lib/
-│           ├── components/   # Componentes Svelte
-│           │   ├── ImageUploader.svelte
-│           │   ├── ParameterControls.svelte
-│           │   ├── ThreeViewer.svelte
-│           │   └── ActionButtons.svelte
-│           ├── services/     # Servicios API
-│           │   └── apiService.js
-│           └── stores/       # Estado global
-│               └── appStore.js
-│
-├── shared/                    # Recursos compartidos
-│   └── docs/                 # Documentación adicional
-│
-└── README.md                 # Este archivo
+└── frontend/
+    └── src/
+        ├── routes/
+        │   └── +page.svelte           # Main page
+        └── lib/
+            ├── components/
+            │   ├── ImageUploader.svelte
+            │   ├── MultiImageUploader.svelte    # ✨ New
+            │   ├── ImageEditor.svelte
+            │   ├── ParameterControls.svelte
+            │   ├── AdvancedShapeControls.svelte
+            │   ├── Lithophane360Controls.svelte
+            │   ├── ScaleCurveEditor.svelte
+            │   ├── PreviewEnhancements.svelte
+            │   ├── ThreeViewer.svelte
+            │   └── ActionButtons.svelte
+            ├── services/
+            │   └── apiService.js              # Axios API client
+            └── stores/
+                └── appStore.js                # Svelte global state stores
 ```
 
-## 🚀 Instalación
+---
 
-### Requisitos Previos
+## 🚀 Quick Start
+
+### Prerequisites
 
 - **Python 3.8+**
 - **Node.js 18+**
-- **npm o yarn**
-- **Git** (opcional)
+- **npm**
 
-### 1. Clonar o Descargar el Proyecto
+### 1 — Clone
 
 ```bash
-git clone https://github.com/tuusuario/litum3d.git
+git clone https://github.com/your-username/litum3d.git
 cd litum3d_software
 ```
 
-### 2. Configurar el Backend
+### 2 — Backend
 
 ```bash
-# Ir al directorio del backend
-cd backend
+# Create and activate virtual environment
+python -m venv .venv
 
-# Crear entorno virtual (recomendado)
-python -m venv venv
+# Windows
+.venv\Scripts\activate
+# Linux / macOS
+source .venv/bin/activate
 
-# Activar entorno virtual
-# En Windows:
-venv\Scripts\activate
-# En Linux/Mac:
-source venv/bin/activate
+# Install dependencies
+pip install -r backend/requirements.txt
 
-# Instalar dependencias
-pip install -r requirements.txt
+# Start the server
+python -m uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### 3. Configurar el Frontend
+Backend available at → **http://localhost:8000**
+Interactive API docs → **http://localhost:8000/docs**
+
+### 3 — Frontend
 
 ```bash
-# Ir al directorio del frontend
-cd ../frontend
-
-# Instalar dependencias
+cd frontend
 npm install
-```
-
-## ▶️ Ejecución
-
-### Opción 1: Ejecución Manual
-
-#### Backend
-```bash
-cd backend
-python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
-```
-
-O usar el script:
-```bash
-cd backend
-run.bat
-```
-
-El backend estará disponible en: `http://localhost:8000`
-- Documentación API: `http://localhost:8000/docs`
-- API alternativa: `http://localhost:8000/redoc`
-
-#### Frontend
-```bash
-cd frontend
 npm run dev
 ```
 
-El frontend estará disponible en: `http://localhost:5173`
+Frontend available at → **http://localhost:5173**
 
-### Opción 2: Ejecución con Scripts
+---
 
-**Windows:**
-```bash
-# Backend
-cd backend
-run.bat
+## 📡 API Reference
 
-# Frontend (en otra terminal)
-cd frontend
-npm run dev
-```
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/process-image` | Upload and process an image |
+| `POST` | `/api/apply-filters` | Apply manual adjustments |
+| `POST` | `/api/auto-enhance` | Auto-enhance image quality |
+| `POST` | `/api/generate-heightmap` | Convert image to heightmap |
+| `POST` | `/api/generate-mesh` | Generate 3D mesh from heightmap |
+| `POST` | `/api/export` | Export mesh to STL or 3MF |
+| `GET`  | `/api/download/{file}` | Download exported file |
+| `POST` | `/api/multi-image-projection` | 360° multi-image collage ✨ |
+| `GET`  | `/api/health` | Health check |
 
-## 📡 API Endpoints
+<details>
+<summary><b>POST /api/process-image</b></summary>
 
-### Procesamiento de Imagen
 ```http
 POST /api/process-image
 Content-Type: multipart/form-data
 
-Parámetros:
-- file: archivo de imagen
-- contrast: float (0.1-3.0)
-- brightness: float (0.1-3.0)
-- blur: int (0-20)
-- sharpen: float (0.0-2.0)
-
-Respuesta:
-{
-  "success": true,
-  "message": "Imagen procesada correctamente",
-  "image_id": "img_abc123",
-  "width": 800,
-  "height": 600
-}
+file: <image>
 ```
-
-### Generar Heightmap
-```http
-POST /api/generate-heightmap
-Content-Type: application/json
-
-Body:
-{
-  "image_id": "img_abc123",
-  "min_height": 0.8,
-  "max_height": 3.2,
-  "invert": false
-}
-
-Respuesta:
-{
-  "success": true,
-  "message": "Mapa de alturas generado correctamente",
-  "heightmap_id": "hmap_def456",
-  "min_value": 0.8,
-  "max_value": 3.2
-}
+```json
+{ "success": true, "image_id": "img_abc123", "width": 800, "height": 600 }
 ```
+</details>
 
-### Generar Malla 3D
-```http
-POST /api/generate-mesh
-Content-Type: application/json
+<details>
+<summary><b>POST /api/generate-mesh</b></summary>
 
-Body:
+```json
 {
   "heightmap_id": "hmap_def456",
-  "shape_type": "plane_rect",
+  "shape_type": "cylinder",
   "thickness": 2.0,
   "smoothing": 0,
-  "resolution": 200,
-  "curvature": 0.0,
-  "tower_height": 50.0,
-  "tower_sides": 4
+  "resolution": 200
 }
-
-Respuesta:
+```
+```json
 {
   "success": true,
-  "message": "Malla 3D generada correctamente",
   "mesh_id": "mesh_ghi789",
   "vertex_count": 40000,
   "face_count": 80000,
   "volume": 1234.56
 }
 ```
+</details>
 
-### Exportar Malla
+<details>
+<summary><b>POST /api/multi-image-projection ✨</b></summary>
+
 ```http
-POST /api/export
-Content-Type: application/json
+POST /api/multi-image-projection
+Content-Type: multipart/form-data
 
-Body:
-{
-  "mesh_id": "mesh_ghi789",
-  "format": "stl",
-  "filename": "mi_litofania"
-}
-
-Respuesta:
+images: <file1>, <file2>, <file3>
+params: {"target_height": 512, "blend_width": 20}
+```
+```json
 {
   "success": true,
-  "message": "Malla exportada correctamente",
-  "download_url": "/api/download/mi_litofania.stl",
-  "file_size": 2048576
+  "heightmap_id": "hmap_multi_xyz",
+  "preview_base64": "data:image/png;base64,...",
+  "metadata": { "num_images": 3, "segments": [...] }
 }
 ```
-
-### Descargar Archivo
-```http
-GET /api/download/{filename}
-
-Respuesta: Archivo binario (STL o 3MF)
-```
-
-## 🎯 Uso de la Aplicación
-
-### Paso 1: Cargar Imagen
-1. Arrastra una imagen al área de carga o haz clic para seleccionar
-2. Formatos soportados: PNG, JPG, GIF
-3. La imagen se procesará automáticamente
-
-### Paso 2: Configurar Parámetros
-1. **Forma**: Elige entre plano, arco, cilindro, torre, etc.
-2. **Alturas**: Define altura mínima y máxima (recomendado: 0.8-3.2 mm)
-3. **Grosor**: Ajusta el grosor base (recomendado: 2.0 mm)
-4. **Suavizado**: Aplica suavizado para reducir detalles
-5. **Resolución**: Mayor resolución = más detalle (50-500)
-
-**Configuración Avanzada:**
-- Contraste
-- Brillo
-- Desenfoque
-- Nitidez
-- Invertir mapa de alturas
-
-### Paso 3: Vista Previa 3D
-- La vista 3D muestra un preview de la geometría
-- **Arrastrar**: Rotar vista
-- **Rueda del mouse**: Zoom
-
-### Paso 4: Generar
-1. Haz clic en "🚀 Generar Litofanía"
-2. Espera a que se procese (puede tardar según resolución)
-3. Verás las estadísticas de la malla generada
-
-### Paso 5: Exportar
-1. Elige formato: **STL** o **3MF**
-2. Haz clic en el botón de exportación
-3. El archivo se descargará automáticamente
-
-## 🖨️ Impresión 3D
-
-### Configuración Recomendada
-
-**Material:**
-- PLA blanco o translúcido
-- PETG blanco (mayor translucidez)
-
-**Configuración de Laminado:**
-- Altura de capa: 0.1-0.2 mm
-- Perímetros: 2-3
-- Relleno: 100%
-- Velocidad: 30-50 mm/s
-- Temperatura: Según material
-- Soporte: No necesario para planos
-
-**Orientación:**
-- Colocar la litofanía de pie (vertical)
-- La superficie con relieves hacia afuera
-
-### Consejos
-- Imprime SIN relleno (100% perímetros)
-- Usa capas finas para mejor detalle
-- Calibra bien tu impresora
-- Ilumina desde atrás con LED blanco
-
-## 🛠️ Desarrollo
-
-### Agregar Nuevas Formas
-
-1. Edita `backend/models/schemas.py` y agrega el tipo de forma:
-```python
-class ShapeType(str, Enum):
-    # ... formas existentes
-    MI_NUEVA_FORMA = "mi_nueva_forma"
-```
-
-2. Implementa la generación en `backend/services/mesh_generator.py`:
-```python
-def _generate_mi_nueva_forma(self, heightmap, thickness):
-    # Tu lógica aquí
-    pass
-```
-
-3. Actualiza el selector en `frontend/src/lib/components/ParameterControls.svelte`
-
-### Agregar Nuevos Filtros
-
-1. Implementa el filtro en `backend/services/image_processor.py`
-2. Agrega parámetros en `backend/models/schemas.py`
-3. Actualiza la UI en el frontend
-
-## 🐛 Solución de Problemas
-
-### Backend no inicia
-```bash
-# Verificar que las dependencias estén instaladas
-pip list
-
-# Reinstalar dependencias
-pip install -r requirements.txt --force-reinstall
-```
-
-### Frontend no compila
-```bash
-# Limpiar node_modules
-rm -rf node_modules
-npm install
-
-# O con yarn
-rm -rf node_modules
-yarn install
-```
-
-### Error de CORS
-- Verifica que el backend esté corriendo en el puerto 8000
-- Revisa la configuración de CORS en `backend/main.py`
-
-### Error al exportar 3MF
-- El formato 3MF puede no estar soportado en algunas versiones de trimesh
-- Usa STL como alternativa
-
-## 📚 Tecnologías Utilizadas
-
-### Backend
-- **FastAPI**: Framework web moderno y rápido
-- **Pillow**: Procesamiento de imágenes
-- **NumPy**: Cálculos numéricos
-- **OpenCV**: Filtros avanzados de imagen
-- **trimesh**: Generación y manipulación de mallas 3D
-- **scipy**: Algoritmos de suavizado
-
-### Frontend
-- **SvelteKit**: Framework web reactivo
-- **Three.js**: Visualización 3D en el navegador
-- **TailwindCSS**: Framework CSS utility-first
-- **Axios**: Cliente HTTP
-
-## 📄 Licencia
-
-Este proyecto está bajo la licencia MIT. Ver archivo `LICENSE` para más detalles.
-
-## 🤝 Contribuciones
-
-Las contribuciones son bienvenidas! Por favor:
-
-1. Haz fork del proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/amazing-feature`)
-3. Commit tus cambios (`git commit -m 'Add amazing feature'`)
-4. Push a la rama (`git push origin feature/amazing-feature`)
-5. Abre un Pull Request
-
-## 👨‍💻 Autor
-
-**Ruben**
-- GitHub: [@ruben](https://github.com/ruben)
-
-## 🙏 Agradecimientos
-
-- Comunidad de impresión 3D
-- Comunidad de código abierto
-- ItsLitho por la inspiración
-
-## 📞 Soporte
-
-Si tienes problemas o preguntas:
-- Abre un issue en GitHub
-- Consulta la documentación de la API en `/docs`
+</details>
 
 ---
 
-**¡Disfruta creando litofanías increíbles! 🌟**
+## 🎯 Workflow
+
+```
+1. Upload Image(s)   →  drag & drop a photo (or multiple for 360° mode)
+2. Edit & Enhance    →  adjust contrast, brightness, or use Auto-Enhance
+3. Choose Shape      →  plane, cylinder, tower, heart…
+4. Set Parameters    →  height range, base thickness, resolution
+5. Advanced          →  torsion, progressive scale, scale curve editor
+6. Preview           →  interactive 3D viewer with lamp simulation
+7. Generate          →  click "Generate Lithophane"
+8. Export            →  download STL or 3MF → slice → print
+```
+
+---
+
+## 🖨️ Printing Tips
+
+**Material:** White or natural PLA / PETG (translucent gives best light diffusion)
+
+| Setting | Recommended Value |
+|---|---|
+| Layer height | 0.10 – 0.15 mm |
+| Perimeters/walls | 2–3 |
+| Infill | 100% |
+| Print speed | 30–50 mm/s |
+| Supports | Not needed for flat/vertical pieces |
+
+> Print vertically (standing up) for maximum surface detail.
+> Backlight with a white LED strip or bulb for the best effect.
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend framework | SvelteKit 5 + Vite |
+| 3D rendering | Three.js |
+| Styling | TailwindCSS 3 |
+| HTTP client | Axios |
+| State management | Svelte writable stores |
+| Backend framework | FastAPI |
+| Image processing | Pillow, OpenCV |
+| Numerical computing | NumPy, SciPy |
+| 3D mesh generation | trimesh |
+| Data validation | Pydantic v2 |
+| ASGI server | Uvicorn |
+
+---
+
+## 🐛 Troubleshooting
+
+<details>
+<summary>Backend won't start — ModuleNotFoundError</summary>
+
+Make sure the virtual environment is active and run from the project root:
+```bash
+.venv\Scripts\activate         # Windows
+python -m uvicorn backend.main:app --reload --port 8000
+```
+</details>
+
+<details>
+<summary>Frontend shows ERR_CONNECTION_REFUSED</summary>
+
+Start the dev server:
+```bash
+cd frontend && npm run dev
+```
+The port is typically `5173` or `5174` depending on what is available.
+</details>
+
+<details>
+<summary>3MF export fails</summary>
+
+Some trimesh builds have limited 3MF support. Use STL as a reliable alternative.
+</details>
+
+---
+
+## 🤝 Contributing
+
+1. Fork the project
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Commit your changes: `git commit -m "feat: add your feature"`
+4. Push: `git push origin feature/your-feature`
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — see [LICENSE](LICENSE) for details.
+
+---
+
+<div align="center">
+
+Built with SvelteKit · Three.js · FastAPI · Python
+
+**If you find this useful, give it a ⭐ on GitHub!**
+
+</div>
