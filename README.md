@@ -18,6 +18,12 @@ A full-stack web application powered by Python, FastAPI, SvelteKit, and Three.js
 
 ---
 
+## Project Status
+
+Experimental / incomplete prototype. Development is not currently prioritised.
+
+---
+
 ## What is a Lithophane?
 
 A **lithophane** is a 3D-printed piece with varying wall thickness that creates a photographic image when backlit. Thinner areas let more light pass through (bright zones), while thicker areas block the light (dark zones), producing stunning depth and detail from an ordinary photo.
